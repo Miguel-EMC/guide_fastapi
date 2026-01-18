@@ -1,97 +1,83 @@
-# GUIDE FOR FastAPI
+# Introduction & Setup
 
-## Introduction to FastAPI and Its Advantages
+This guide covers FastAPI fundamentals, installation, and creating your first application.
 
-FastAPI is a modern, high-performance web framework for building APIs with Python based on standard Python type hints.
+## What is FastAPI?
 
-### Key advantages of FastAPI
+FastAPI is a modern, high-performance web framework for building APIs with Python based on standard Python type hints. It's one of the fastest Python frameworks available.
 
-1. PERFORMANCE
-   FastAPI lives up to its name by offering exceptional speed. Built on Starlette for the web parts and Pydantic for data validation, It's one of the fastest python frameworks available, comparable to Node.Js and GO.
+### Key Features
 
-2. TYPE HINTS AND VALIDATIONS
-   FastAPI leverages python's type hints to:
+| Feature | Description |
+|---------|-------------|
+| **High Performance** | Built on Starlette and Pydantic, comparable to Node.js and Go |
+| **Type Safety** | Leverages Python type hints for validation and documentation |
+| **Auto Documentation** | Swagger UI and ReDoc generated automatically |
+| **Async Support** | Full async/await support for concurrent requests |
+| **Standards Based** | Built on OpenAPI and JSON Schema standards |
 
-- Reduce bugs by validating request data
-- Convert incoming JSON to python objects
-- Validate data constraints and generate detailed error messages
-- Automatically document of API
+### Why Choose FastAPI?
 
-3. AUTOMATIC DOCUMENTATION
-   One of FastAPI's most praised features is its automatic interactive API documentation:
+1. **Performance**: One of the fastest Python frameworks
+2. **Developer Experience**: Intuitive API, excellent IDE support
+3. **Automatic Validation**: Request data validated automatically
+4. **Interactive Docs**: Test your API directly in the browser
+5. **Modern Python**: Uses type hints and async/await
 
-- Swagger UI (accessible at /docs) for interactive testing
-- ReDoc (accessible at /redoc) for a more readable documentation
-- Both are generated automatically based on your code and type hints
+## Prerequisites
 
-4. Developer Experience
+Before starting, ensure you have:
 
-- Detailed and intuitive error messages
-- IDE autocompletion support
-- Less code repetition
-- Intuitive design that's easy to learn
+- Python 3.10+ installed
+- Basic Python knowledge
+- A code editor (VS Code recommended)
+- Terminal/command line access
 
-5. Modern Python Features
+## Installation
 
-- Fully supports async/await for handling concurrent requests
-- Compatible with Python 3.6+ type hints
-- Works with Python standard libraries
+### Step 1: Create Virtual Environment
 
-6. Standards-Based
+Always use virtual environments to avoid dependency conflicts.
 
-- Built on open standards like OpenAPI and JSON Schema
-- Easy integration with other tools that follow these standards
-
-## Setting Up Development Environment
-
-### Prerequisites
-
-- Python 3.6+ installed on your system
-- Basic knowledge of Python
-- A code editor (VS Code, PyCharm, etc.)
-- Command line/terminal access
-
-# FastAPI Installation Guide
-
-## Step 1: Create a Virtual Environment
-
-It’s always recommended to use a virtual environment for Python projects to avoid dependency conflicts.
-
-### macOS / Linux
+**Linux / macOS:**
 
 ```bash
 python3 -m venv venv
 source venv/bin/activate
 ```
 
-### Windows
+**Windows:**
 
 ```bash
 python -m venv venv
 venv\Scripts\activate
 ```
 
-## Step 2: Install FastAPI and Uvicorn
+### Step 2: Install FastAPI
 
-FastAPI requires a server to run. Uvicorn is a lightning-fast ASGI server implementation that works perfectly with FastAPI.
-
-Standard Installation:
+**Standard Installation:**
 
 ```bash
 pip install fastapi uvicorn
 ```
 
-Development Installation (Recommended): For development, it is often better to install the standard package, which includes Uvicorn, Pydantic, and other optional dependencies:
+**Full Installation (Recommended):**
 
 ```bash
 pip install "fastapi[standard]"
 ```
 
-## Step 3: Verify Installation
+This includes:
+- `uvicorn` - ASGI server
+- `pydantic` - Data validation
+- `python-multipart` - Form data support
+- Additional utilities
 
-To ensure everything is set up correctly, create a test file named check_install.py with the following content:
+### Step 3: Verify Installation
 
-```Python
+Create `check_install.py`:
+
+```python
 import fastapi
 import uvicorn
 import pydantic
@@ -101,119 +87,217 @@ print(f"Uvicorn version: {uvicorn.__version__}")
 print(f"Pydantic version: {pydantic.__version__}")
 ```
 
-Run the verification script:
+Run:
 
 ```bash
 python check_install.py
 ```
 
-Expected Output: You should see the installed version numbers for each package printed in your terminal.
+Expected output:
 
+```
+FastAPI version: 0.100.x
+Uvicorn version: 0.23.x
+Pydantic version: 2.x.x
+```
 
+## Your First Application
 
-4. Creating Your First FastAPI Application
-### Step 1: Create a Basic Application
+### Step 1: Create Basic App
 
-Create a new file named main.py:
+Create `main.py`:
 
-```Python
+```python
 from fastapi import FastAPI
 
-# Create an instance of the FastAPI class
+# Create FastAPI instance
 app = FastAPI()
 
-# Define a root endpoint
+# Define root endpoint
 @app.get("/")
 def read_root():
- return {"message": "Hello World"}
+    return {"message": "Hello, World!"}
 
-# Define a path parameter endpoint
+# Define path parameter endpoint
 @app.get("/items/{item_id}")
 def read_item(item_id: int):
     return {"item_id": item_id}
 ```
 
-### Step 2: Run the Application
-Run the server using Uvicorn:
+**Code Breakdown:**
+
+| Element | Description |
+|---------|-------------|
+| `FastAPI()` | Creates the application instance |
+| `@app.get("/")` | Decorator defining GET endpoint at root path |
+| `item_id: int` | Type hint that validates and converts the parameter |
+
+### Step 2: Run the Server
+
 ```bash
 uvicorn main:app --reload
 ```
 
-This command means:
- * main: the file main.py
- * app: the app object created inside main.py --reload: restart the server when code changes (development only)
+**Command explanation:**
 
+| Part | Meaning |
+|------|---------|
+| `main` | The file `main.py` |
+| `app` | The FastAPI instance in the file |
+| `--reload` | Auto-restart on code changes (development only) |
 
 ### Step 3: Test Your API
-Open your browser and navigate to:
-* http://127.0.0.1:8000/ - You should see: {"message": "Hello World"}
-* http://127.0.0.1:8000/items/5 - You should see: {"item_id": 5}
 
-### Step 4: Explore the Automatic Documentation
-Navigate to:
-* http://127.0.0.1:8000/docs - Swagger UI documentation
-* http://127.0.0.1:8000/redoc - ReDoc documentation
+Open your browser:
 
-The interactive documentation allows you to:
-- See all available endpoints
-- Understand the expected parameters
-- Try out the API directly from the browser
+- `http://127.0.0.1:8000/` - Returns: `{"message": "Hello, World!"}`
+- `http://127.0.0.1:8000/items/5` - Returns: `{"item_id": 5}`
+- `http://127.0.0.1:8000/items/abc` - Returns: 422 validation error
+
+### Step 4: Explore Documentation
+
+FastAPI generates interactive documentation automatically:
+
+| URL | Documentation Type |
+|-----|-------------------|
+| `http://127.0.0.1:8000/docs` | Swagger UI - Interactive testing |
+| `http://127.0.0.1:8000/redoc` | ReDoc - Clean, readable format |
+
+**Features:**
+- View all endpoints
+- See expected parameters
+- Test API directly
 - View response schemas
 
+## Adding Request Body
 
+Enhance your app with POST endpoints:
 
-
-### Step 5: Enhance Your API with Request Body
-Update your main.py to include a POST endpoint with a request body:
-
-```Python
+```python
 from fastapi import FastAPI
 from pydantic import BaseModel
 
-# Create an instance of the FastAPI class
 app = FastAPI()
 
-# Define a Pydantic model for request body validation
+# Define request model
 class Item(BaseModel):
-name: str
-price: float
-is_offer: bool = None
+    name: str
+    price: float
+    is_offer: bool = False
 
-# Define a root endpoint
 @app.get("/")
 def read_root():
-   return {"message": "Hello World"}
+    return {"message": "Hello, World!"}
 
-# Define a path parameter endpoint
 @app.get("/items/{item_id}")
 def read_item(item_id: int, q: str = None):
-   return {"item_id": item_id, "q": q}
+    return {"item_id": item_id, "q": q}
 
-# Define a POST endpoint with request body
 @app.post("/items/")
 def create_item(item: Item):
-   return item
+    return item
+
+@app.put("/items/{item_id}")
+def update_item(item_id: int, item: Item):
+    return {"item_id": item_id, **item.model_dump()}
 ```
 
-Restart the server (if not using --reload) and test the new endpoint using the Swagger UI at /docs.
+**Model Fields:**
 
+| Field | Type | Required | Default |
+|-------|------|----------|---------|
+| `name` | `str` | Yes | - |
+| `price` | `float` | Yes | - |
+| `is_offer` | `bool` | No | `False` |
 
-### Step 6: Adding Basic Configuration
-Enhance your FastAPI application with metadata and configuration:
+## Application Configuration
 
-```Python
+Add metadata to improve documentation:
+
+```python
 from fastapi import FastAPI
-from pydantic import BaseModel
 
-# Create an instance with metadata
 app = FastAPI(
-title="My First API",
-description="A simple API built with FastAPI",
-version="0.1.0",
-docs_url="/documentation", # Change the docs URL
-redoc_url="/redoc"
+    title="My API",
+    description="A sample API built with FastAPI",
+    version="1.0.0",
+    docs_url="/docs",        # Swagger UI path
+    redoc_url="/redoc",      # ReDoc path
+    openapi_url="/openapi.json"  # OpenAPI schema
 )
-
 ```
 
-# ... rest of your code
+**Configuration Options:**
+
+| Parameter | Description | Default |
+|-----------|-------------|---------|
+| `title` | API name in docs | "FastAPI" |
+| `description` | API description | "" |
+| `version` | API version | "0.1.0" |
+| `docs_url` | Swagger UI URL | "/docs" |
+| `redoc_url` | ReDoc URL | "/redoc" |
+| `openapi_url` | OpenAPI JSON URL | "/openapi.json" |
+
+## Project Structure
+
+For simple projects:
+
+```
+my_project/
+├── main.py           # Application entry
+├── requirements.txt  # Dependencies
+└── .env             # Environment variables
+```
+
+For larger projects, see [Project Architecture](./13-architecture.md).
+
+## Common Issues
+
+### Port Already in Use
+
+```bash
+# Find process using port 8000
+lsof -i :8000  # Linux/macOS
+netstat -ano | findstr :8000  # Windows
+
+# Use different port
+uvicorn main:app --reload --port 8001
+```
+
+### Module Not Found
+
+```bash
+# Ensure virtual environment is activated
+source venv/bin/activate
+
+# Reinstall dependencies
+pip install "fastapi[standard]"
+```
+
+### Type Hints Not Working
+
+Ensure Python 3.10+ or use:
+
+```python
+from typing import Optional, List, Union
+```
+
+## Summary
+
+You learned:
+
+- What FastAPI is and its advantages
+- How to install FastAPI and dependencies
+- Creating your first API endpoint
+- Using path parameters with type hints
+- Working with request bodies (Pydantic models)
+- Accessing automatic documentation
+
+## Next Steps
+
+- [Routing & Endpoints](./02-routing.md) - Learn about HTTP methods and parameters
+- [Data Validation](./03-data-validation.md) - Master Pydantic validation
+
+---
+
+[Back to Index](./README.md) | [Next: Routing & Endpoints](./02-routing.md)

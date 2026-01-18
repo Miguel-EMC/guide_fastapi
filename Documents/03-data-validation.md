@@ -1,21 +1,23 @@
 # Data Validation with Pydantic
 
-## Introduction to Pydantic Models
+This guide covers Pydantic fundamentals, field validation, custom validators, and integration with FastAPI.
 
-Pydantic V2, released in June 2023, is a major rewrite that brings significant performance improvements and new features to one of Python's most popular data validation libraries. Pydantic seamlessly integrates with FastAPI to provide robust data validation, serialization, and documentation.
+## What is Pydantic?
 
-### What is Pydantic?
+Pydantic is a data validation library that uses Python type annotations to:
 
-Pydantic is a data validation and settings management library that uses Python type annotations to:
+| Feature | Description |
+|---------|-------------|
+| **Validate Data** | Enforce types and constraints at runtime |
+| **Convert Types** | Automatically convert compatible types |
+| **Generate Schemas** | Create JSON Schema for documentation |
+| **IDE Support** | Full autocomplete and type checking |
 
-* Validate data at runtime
-* Convert incoming data to Python types
-* Generate JSON Schema for your models
-* Provide autocomplete and type checking in your IDE
+## Basic Models
 
-## Basic Model Example
+### Creating a Model
 
-```Python
+```python
 from pydantic import BaseModel
 from datetime import datetime
 from typing import Optional
@@ -30,128 +32,267 @@ class User(BaseModel):
     profile_picture: Optional[str] = None
 ```
 
-When you create a Pydantic model, it enforces type validation automatically:
+### Using the Model
 
-```Python
-# Valid data
-user = User(id=1, name="John Doe", email="john@example.com")
+```python
+# Valid data - automatic type conversion
+user = User(id="1", name="John", email="john@example.com")
+print(user.id)  # 1 (converted to int)
+
+# Access as dictionary
 print(user.model_dump())
 
-# Invalid data raises ValidationError
-try:
-    User(id="not-an-integer", name=123, email="invalid-email")
-except Exception as e:
-    print(f"Validation error: {e}")
+# Convert to JSON
+print(user.model_dump_json())
 ```
 
-## Data Validation and Serialization
+### Validation Errors
 
-### Basic Validation with Type Annotations
+```python
+from pydantic import ValidationError
 
-Pydantic uses Python type annotations to validate data:
+try:
+    user = User(id="not-a-number", name=123, email="invalid")
+except ValidationError as e:
+    print(e.errors())
+```
 
-```Python
+## Field Validation
+
+### Using Field Constraints
+
+```python
 from pydantic import BaseModel, Field, EmailStr
-from typing import Annotated
 
 class Product(BaseModel):
     id: int
-    name: str
-    price: float = Field(gt=0) # Must be greater than 0
-    in_stock: bool = True
-    tags: list[str] = []
-    description: str = Field(min_length=10, max_length=1000)
-    contact_email: EmailStr # Specialized email validation
-    quantity: Annotated[int, Field(ge=0)] # Must be greater than or equal to 0
+    name: str = Field(min_length=2, max_length=100)
+    price: float = Field(gt=0, description="Must be positive")
+    quantity: int = Field(ge=0, le=1000)
+    description: str = Field(default="", max_length=1000)
+    email: EmailStr  # Requires email-validator package
 ```
 
-## Field Validation with Pydantic Validators
+### Field Constraint Reference
 
-Pydantic V2 introduces new ways to create validators:
+| Constraint | Type | Description | Example |
+|------------|------|-------------|---------|
+| `gt` | Numeric | Greater than | `Field(gt=0)` |
+| `ge` | Numeric | Greater than or equal | `Field(ge=0)` |
+| `lt` | Numeric | Less than | `Field(lt=100)` |
+| `le` | Numeric | Less than or equal | `Field(le=100)` |
+| `min_length` | String | Minimum length | `Field(min_length=1)` |
+| `max_length` | String | Maximum length | `Field(max_length=50)` |
+| `pattern` | String | Regex pattern | `Field(pattern="^[a-z]+$")` |
+| `default` | Any | Default value | `Field(default="")` |
+| `description` | Any | Documentation | `Field(description="...")` |
 
-### 1. Field validators (replacing V1 validators)
+### Special Types
 
-```Python
+```python
+from pydantic import BaseModel, EmailStr, HttpUrl, Field
+from typing import Annotated
+
+class Contact(BaseModel):
+    email: EmailStr                    # Validated email
+    website: HttpUrl                   # Validated URL
+    phone: Annotated[str, Field(pattern=r"^\d{10}$")]  # 10 digits
+```
+
+## Custom Validators
+
+### Field Validators
+
+Validate individual fields:
+
+```python
 from pydantic import BaseModel, field_validator
 
-class SignupForm(BaseModel):
+class User(BaseModel):
     username: str
-    passwordl: str
-    password2: str
+    password: str
 
     @field_validator('username')
     @classmethod
     def username_alphanumeric(cls, v: str) -> str:
         if not v.isalnum():
             raise ValueError('Username must be alphanumeric')
-        return v
+        return v.lower()  # Transform to lowercase
 
-    @field_validator('password2')
+    @field_validator('password')
     @classmethod
-    def passwords_match(cls, v: str, info):
-        if 'passwordl' in info.data and v != info.data['passwordl']:
+    def password_strength(cls, v: str) -> str:
+        if len(v) < 8:
+            raise ValueError('Password must be at least 8 characters')
+        if not any(c.isdigit() for c in v):
+            raise ValueError('Password must contain a digit')
+        return v
+```
+
+### Model Validators
+
+Validate across multiple fields:
+
+```python
+from pydantic import BaseModel, model_validator
+
+class DateRange(BaseModel):
+    start_date: datetime
+    end_date: datetime
+
+    @model_validator(mode='after')
+    def check_dates(self) -> 'DateRange':
+        if self.start_date >= self.end_date:
+            raise ValueError('end_date must be after start_date')
+        return self
+```
+
+### Validating with Dependencies
+
+```python
+from pydantic import BaseModel, field_validator
+
+class SignupForm(BaseModel):
+    password: str
+    password_confirm: str
+
+    @field_validator('password_confirm')
+    @classmethod
+    def passwords_match(cls, v: str, info) -> str:
+        if 'password' in info.data and v != info.data['password']:
             raise ValueError('Passwords do not match')
         return v
 ```
 
-### 2. Model validators
+## Nested Models
 
-```Python
-from pydantic import BaseModel, model_validator
+### Basic Nesting
+
+```python
+class Address(BaseModel):
+    street: str
+    city: str
+    country: str
+    zip_code: str
+
+class User(BaseModel):
+    id: int
+    name: str
+    address: Address  # Nested model
+```
+
+**JSON input:**
+
+```json
+{
+  "id": 1,
+  "name": "John",
+  "address": {
+    "street": "123 Main St",
+    "city": "New York",
+    "country": "USA",
+    "zip_code": "10001"
+  }
+}
+```
+
+### Lists of Models
+
+```python
+class OrderItem(BaseModel):
+    product_id: int
+    quantity: int = Field(gt=0)
+    unit_price: float = Field(gt=0)
 
 class Order(BaseModel):
-    items: list[str]
-    item_count: int
-
-    @model_validator(mode='after')
-    def check_item_count(self) -> 'Order':
-        if len(self.items) != self.item_count:
-            raise ValueError('Item count does not match number of items')
-        return self
-```
-
-## Serialization and Deserialization
-
-Pydantic makes it easy to convert models to and from various formats:
-
-```Python
-from pydantic import BaseModel
-from datetime import datetime
-import json
-
-class Article(BaseModel):
     id: int
-    title: str
-    content: str
-    published: datetime
-    tags: list[str] = []
-
-# Create a model from Python objects
-article = Article(
-    id=1,
-    title="Pydantic V2 is Amazing",
-    content="This is the content of the article.",
-    published=datetime.now(),
-    tags=["pydantic", "python", "fastapi"]
-)
-
-# Serialize to JSON
-json_data = article.model_dump_json()
-print(json_data)
-
-# Deserialize from JSON
-article_dict = json.loads(json_data)
-# Need to manually parse datetime when deserializing from raw JSON
-article_dict['published'] = datetime.fromisoformat(article_dict['published'])
-new_article = Article.model_validate(article_dict)
+    customer_id: int
+    items: list[OrderItem]  # List of nested models
 ```
 
-## Using Pydantic with FastAPI
+### Recursive Models
 
-In FastAPI, Pydantic models automatically validate request data:
+For self-referential structures:
 
-```Python
-from fastapi import FastAPI, HTTPException
+```python
+class Comment(BaseModel):
+    id: int
+    text: str
+    replies: list['Comment'] = []  # Forward reference
+
+# Required for recursive models in Pydantic v2
+Comment.model_rebuild()
+```
+
+## Model Configuration
+
+### Config Options
+
+```python
+from pydantic import BaseModel, ConfigDict
+
+class User(BaseModel):
+    model_config = ConfigDict(
+        strict=True,              # No type coercion
+        frozen=True,              # Immutable instances
+        extra='forbid',           # Reject extra fields
+        str_strip_whitespace=True # Strip whitespace from strings
+    )
+
+    name: str
+    email: str
+```
+
+### Common Config Options
+
+| Option | Description | Default |
+|--------|-------------|---------|
+| `strict` | No automatic type conversion | `False` |
+| `frozen` | Make instances immutable | `False` |
+| `extra` | Handle extra fields: `'allow'`, `'forbid'`, `'ignore'` | `'ignore'` |
+| `str_strip_whitespace` | Strip whitespace from strings | `False` |
+| `from_attributes` | Read from object attributes (for ORM) | `False` |
+
+## Serialization
+
+### Model to Dictionary
+
+```python
+user = User(id=1, name="John", email="john@example.com")
+
+# All fields
+data = user.model_dump()
+
+# Exclude fields
+data = user.model_dump(exclude={'password'})
+
+# Include only specific fields
+data = user.model_dump(include={'id', 'name'})
+
+# Exclude unset fields (for partial updates)
+data = user.model_dump(exclude_unset=True)
+```
+
+### Model to JSON
+
+```python
+json_str = user.model_dump_json()
+json_str = user.model_dump_json(indent=2)  # Pretty print
+```
+
+### Dictionary to Model
+
+```python
+data = {"id": 1, "name": "John", "email": "john@example.com"}
+user = User.model_validate(data)
+```
+
+## FastAPI Integration
+
+### Request Validation
+
+```python
+from fastapi import FastAPI
 from pydantic import BaseModel, Field, EmailStr
 
 app = FastAPI()
@@ -168,87 +309,156 @@ class UserResponse(BaseModel):
 
 @app.post("/users/", response_model=UserResponse)
 async def create_user(user: UserCreate):
-    # FastAPI automatically validates user data based on the Pydantic model
-    # If validation fails, it returns a 422 Unprocessable Entity error
-
-    # Here you would typically save the user to a database
-    # For this example, we'll just return a mock response
+    # FastAPI automatically validates request body
+    # Returns 422 if validation fails
     return UserResponse(id=1, username=user.username, email=user.email)
 ```
 
-## Custom Data Types and Validators
+### Separate Input/Output Models
 
-### Custom Data Types
+```python
+# Base fields shared between models
+class UserBase(BaseModel):
+    username: str
+    email: EmailStr
 
-You can create custom data types for specialized validation:
+# For creating users (input)
+class UserCreate(UserBase):
+    password: str
 
-```Python
-from pydantic import BaseModel, Field, field_validator
-from typing import Annotated, NewType
-import re
+# For updating users (all optional)
+class UserUpdate(BaseModel):
+    username: str | None = None
+    email: EmailStr | None = None
+    password: str | None = None
 
-# Option 1: Using NewType with Pydantic validators
-UserId = NewType('UserId', str)
+# For responses (output)
+class UserResponse(UserBase):
+    id: int
+    created_at: datetime
 
-class User(BaseModel):
-    id: UserId
-    name: str
+    model_config = ConfigDict(from_attributes=True)
+```
 
-    @field_validator('id')
+### ORM Mode
+
+For SQLAlchemy/SQLModel integration:
+
+```python
+from pydantic import ConfigDict
+
+class UserResponse(BaseModel):
+    id: int
+    username: str
+    email: str
+
+    model_config = ConfigDict(from_attributes=True)
+
+# Now works with ORM objects
+@app.get("/users/{user_id}", response_model=UserResponse)
+async def get_user(user_id: int, db: Session = Depends(get_db)):
+    db_user = db.query(User).filter(User.id == user_id).first()
+    return db_user  # Pydantic reads from object attributes
+```
+
+## Complete Example
+
+```python
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel, Field, EmailStr, field_validator
+from datetime import datetime
+from typing import Optional
+
+app = FastAPI()
+
+class OrderItem(BaseModel):
+    product_id: int
+    quantity: int = Field(gt=0)
+    unit_price: float = Field(gt=0)
+
+class OrderCreate(BaseModel):
+    customer_email: EmailStr
+    items: list[OrderItem] = Field(min_length=1)
+    notes: Optional[str] = Field(default=None, max_length=500)
+
+    @field_validator('items')
     @classmethod
-    def validate_user_id(cls, v: str) -> str:
-        if not re.match(r'^USER_\d{6}$', v):
-            raise ValueError('User ID must be in format USER_XXXXXX')
+    def validate_items(cls, v):
+        if len(v) > 100:
+            raise ValueError('Maximum 100 items per order')
         return v
 
-# Option 2: Using Annotated with Field constraints
-ISBN = Annotated[str, Field(
-    pattern=r'^[0-9]{9}[0-9X]$|^[0-9]{13}$|^[0-9]{1,5}-[0-9]+-[0-9]+-[0-9X]$|^[0-9]{3}-[0-9]{1,5}-[0-9]+-[0-9]+-[0-9]$'
-)]
+class OrderResponse(BaseModel):
+    id: int
+    customer_email: str
+    items: list[OrderItem]
+    total: float
+    created_at: datetime
 
-class Book(BaseModel):
-    title: str
-    isbn: ISBN
+@app.post("/orders/", response_model=OrderResponse)
+async def create_order(order: OrderCreate):
+    total = sum(item.quantity * item.unit_price for item in order.items)
+
+    return OrderResponse(
+        id=1,
+        customer_email=order.customer_email,
+        items=order.items,
+        total=total,
+        created_at=datetime.now()
+    )
 ```
 
-### Custom Validators with Dependencies
+## Best Practices
 
-You can create reusable validator functions:
+### Do's
 
-```Python
-from pydantic import BaseModel, field_validator, model_validator
-from datetime import date
+```python
+# Use separate models for input/output
+class UserCreate(BaseModel): ...
+class UserResponse(BaseModel): ...
 
-def validate_future_date(value: date) -> date:
-    if value <= date.today():
-        raise ValueError("Date must be in the future")
-    return value
+# Add descriptive fields
+name: str = Field(description="User's full name")
 
-class Event(BaseModel):
-    name: str
-    event_date: date
+# Use EmailStr for emails
+email: EmailStr
 
-    @field_validator('event_date')
-    @classmethod
-    def check_future_date(cls, v: date) -> date:
-        return validate_future_date(v)
+# Set sensible constraints
+password: str = Field(min_length=8)
 ```
 
-### Complex Validators with Context
+### Don'ts
 
-For complex validation scenarios, you can access other field values:
+```python
+# Don't include passwords in responses
+class UserResponse(BaseModel):
+    password: str  # Security risk!
 
-```Python
-from pydantic import BaseModel, field_validator, model_validator
-from datetime import datetime
+# Don't skip validation
+name: str  # Add constraints: Field(min_length=1)
 
-class DateRange(BaseModel):
-    start_date: datetime
-    end_date: datetime
-
-    @model_validator(mode='after')
-    def check_dates_order(self) -> 'DateRange':
-        if self.start_date >= self.end_date:
-            raise ValueError('End date must be after start date')
-        return self
+# Don't mix input/output concerns
+class User(BaseModel):  # Split into UserCreate and UserResponse
+    id: int
+    password: str
 ```
+
+## Summary
+
+You learned:
+
+- Creating Pydantic models with type annotations
+- Field validation with constraints
+- Custom validators for complex logic
+- Nested and recursive models
+- Serialization and deserialization
+- FastAPI integration patterns
+
+## Next Steps
+
+- [Request Bodies](./04-request-bodies.md) - Handle JSON and form data
+- [Response Models](./05-response-models.md) - Configure API responses
+
+---
+
+[Previous: Routing](./02-routing.md) | [Back to Index](./README.md) | [Next: Request Bodies](./04-request-bodies.md)
