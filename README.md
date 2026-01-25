@@ -46,3 +46,10 @@ Each framework has its own directory, which is divided into two parts:
 
 -   **[View the Laravel Guide](./Laravel_guide/guide/)**
 -   **[View the Example Project](./Laravel_guide/example_project/)**
+
+### 🐹 Go (Gin Framework)
+
+> A comprehensive guide to backend development with the Go programming language, covering language fundamentals, standard library APIs, and building high-performance services with the Gin web framework.
+
+-   **[View the Go Guide](./Go_guide/guide/)**
+-   **[View the Example Project](./Go_guide/example_project/)**
