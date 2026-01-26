@@ -53,3 +53,10 @@ Each framework has its own directory, which is divided into two parts:
 
 -   **[View the Go Guide](./Go_guide/guide/)**
 -   **[View the Example Project](./Go_guide/example_project/)**
+
+### ⚡ Express.js (TypeScript)
+
+> A guide to building robust and scalable backend APIs with Node.js and Express, using the power of TypeScript for type safety and improved developer experience.
+
+-   **[View the Express.js Guide](./ExpressJS_guide/guide/)**
+-   **[View the Example Project](./ExpressJS_guide/example_project/)**
