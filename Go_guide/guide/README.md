@@ -35,3 +35,6 @@ Welcome to the comprehensive guide to building backend applications with Go.
 20. [Project Structure and Best Practices](./20-project-structure-and-best-practices.md)
 21. [Deployment of Go Applications](./21-deployment-docker-binary.md)
 22. [Authentication with JWT](./22-authentication-jwt.md)
+
+---
+_Guide created by Miguel Muzo ([@migueldev11](https://github.com/migueldev11))_

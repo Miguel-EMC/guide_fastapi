@@ -26,3 +26,6 @@ Welcome to the comprehensive guide to building efficient and scalable backend ap
 20. [Logging and Monitoring](./20-logging-monitoring.md)
 21. [API Versioning](./21-api-versioning.md)
 22. [Common Patterns](./22-common-patterns.md)
+
+---
+_Guide created by Miguel Muzo ([@migueldev11](https://github.com/migueldev11))_

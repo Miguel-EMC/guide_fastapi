@@ -29,3 +29,6 @@ Welcome to the comprehensive guide to building backend APIs with Django and Djan
 23. [Parsers and Renderers](./23-parsers-renderers.md)
 24. [API Schema Generation](./24-api-schema-generation.md)
 25. [Frontend Integration](./25-frontend-integration.md)
+
+---
+_Guide created by Miguel Muzo ([@migueldev11](https://github.com/migueldev11))_

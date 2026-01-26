@@ -30,3 +30,6 @@ Welcome to the comprehensive guide to building backend APIs with Laravel.
 24. [Microservices Communication](./24-microservices-communication.md)
 25. [Caching Strategies](./25-caching-strategies.md)
 26. [Full-Text Search with Scout](./26-full-text-search-scout.md)
+
+---
+_Guide created by Miguel Muzo ([@migueldev11](https://github.com/migueldev11))_

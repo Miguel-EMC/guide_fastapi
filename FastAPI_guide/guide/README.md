@@ -21,3 +21,6 @@ Welcome to the comprehensive guide to building high-performance backend APIs wit
 15. [Testing](./14-testing.md)
 16. [Deployment](./15-deployment.md)
 17. [Project: Todo List API](./16-project-todo.md)
+
+---
+_Guide created by Miguel Muzo ([@migueldev11](https://github.com/migueldev11))_

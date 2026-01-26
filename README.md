@@ -1,4 +1,8 @@
-# Backend Development Guides
+# 📚 The Ultimate Backend Development Guide
+
+<p align="center">
+  A curated collection of comprehensive guides for building professional backend applications with various modern frameworks and languages.
+</p>
 
 <p align="center">
   <img src="https://img.shields.io/badge/Maintained%3F-yes-green.svg" alt="Maintained">
@@ -6,14 +10,15 @@
   <img src="https://img.shields.io/badge/built%20with-Markdown-red.svg" alt="Built with Markdown">
 </p>
 
-Welcome to my collection of guides and example projects for various backend frameworks! The purpose of this repository is to provide clear, concise documentation alongside functional code examples.
+---
 
-## 📂 Repository Structure
+## ✍️ Author
 
-Each framework has its own directory, which is divided into two parts:
+Created and maintained by **Miguel Muzo**.
 
--   `guide/`: Contains the documentation and theoretical explanations.
--   `example_project/`: Contains a complete and functional code project.
+-   **GitHub**: [@migueldev11](https://github.com/migueldev11)
+-   **YouTube**: [@migueldev11](https://youtube.com/@migueldev11)
+-   **TikTok**: [@migueldev11](https://www.tiktok.com/@migueldev11)
 
 ---
 
@@ -21,50 +26,17 @@ Each framework has its own directory, which is divided into two parts:
 
 High-level guides on software design and architecture that apply to all frameworks.
 
--   **[View Architectural Principles](./Architectural_Principles/)**
+-   **[Read the Architectural Principles](./Architectural_Principles/)**
 
 ---
 
-## 🚀 Included Frameworks
+## 🚀 Included Framework Guides
 
-### 🐍 Django
-
-> A comprehensive guide to building web APIs with Django and Django REST Framework, including an example API project for a doctor's clinic.
-
--   **[View the Django Guide](./Django_guide/guide/)**
--   **[View the Example Project](./Django_guide/example_project/)**
-
-### ⚡ FastAPI
-
-> A guide to developing high-performance APIs with FastAPI, covering everything from basic concepts to database implementation and authentication.
-
--   **[View the FastAPI Guide](./FastAPI_guide/guide/)**
--   **[View the Example Project](./FastAPI_guide/example_project/)**
-
-### 📦 NestJS
-
-> A guide to building efficient and scalable Node.js applications using NestJS, a progressive TypeScript framework.
-
--   **[View the NestJS Guide](./NestJS_guide/guide/)**
--   **[View the Example Project](./NestJS_guide/example_project/)**
-
-### 🐘 Laravel
-
-> A backend-focused guide to the Laravel framework, covering everything from core concepts to advanced topics like microservices and high-performance APIs.
-
--   **[View the Laravel Guide](./Laravel_guide/guide/)**
--   **[View the Example Project](./Laravel_guide/example_project/)**
-
-### 🐹 Go (Gin Framework)
-
-> A comprehensive guide to backend development with the Go programming language, covering language fundamentals, standard library APIs, and building high-performance services with the Gin web framework.
-
--   **[View the Go Guide](./Go_guide/guide/)**
--   **[View the Example Project](./Go_guide/example_project/)**
-
-### ⚡ Express.js (TypeScript)
-
-> A guide to building robust and scalable backend APIs with Node.js and Express, using the power of TypeScript for type safety and improved developer experience.
-
--   **[View the Express.js Guide](./ExpressJS_guide/guide/)**
--   **[View the Example Project](./ExpressJS_guide/example_project/)**
+| Framework                  | Language     | Description                                                                                             | Link to Guide                                           |
+| -------------------------- | ------------ | ------------------------------------------------------------------------------------------------------- | ------------------------------------------------------- |
+| 🐍 **Django**              | `Python`     | A comprehensive guide to building web APIs with Django and Django REST Framework.                       | [**View Guide**](./Django_guide/guide/)                 |
+| ⚡ **FastAPI**              | `Python`     | A guide to developing high-performance APIs with FastAPI.                                               | [**View Guide**](./FastAPI_guide/guide/)                |
+| 📦 **NestJS**              | `TypeScript` | A guide to building efficient and scalable Node.js applications.                                        | [**View Guide**](./NestJS_guide/guide/)                 |
+| 🐘 **Laravel**             | `PHP`        | A backend-focused guide covering everything from core concepts to microservices.                        | [**View Guide**](./Laravel_guide/guide/)                |
+| 🐹 **Go (Gin)**            | `Go`         | A comprehensive guide to backend development with the Go language and Gin framework.                    | [**View Guide**](./Go_guide/guide/)                     |
+| ⚡ **Express.js**           | `TypeScript` | A guide to building robust and scalable backend APIs with Node.js and Express.                          | [**View Guide**](./ExpressJS_guide/guide/)              |
