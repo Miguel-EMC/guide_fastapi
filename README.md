@@ -12,8 +12,16 @@ Welcome to my collection of guides and example projects for various backend fram
 
 Each framework has its own directory, which is divided into two parts:
 
--   **`guide/`**: Contains the documentation and theoretical explanations.
--   **`example_project/`**: Contains a complete and functional code project.
+-   `guide/`: Contains the documentation and theoretical explanations.
+-   `example_project/`: Contains a complete and functional code project.
+
+---
+
+## 🏛️ Architectural Principles
+
+High-level guides on software design and architecture that apply to all frameworks.
+
+-   **[View Architectural Principles](./Architectural_Principles/)**
 
 ---
 
